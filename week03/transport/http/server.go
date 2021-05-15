@@ -91,7 +91,6 @@ func (s *Server) HandleFunc(path string, h http.HandlerFunc) {
 }
 
 
-
 // Start start the HTTP server.
 func (s *Server) Start() error {
 	lis, err := net.Listen(s.network, s.address)

@@ -2,8 +2,10 @@ package application
 
 import (
 	"context"
+	"errors"
 	"log"
 	"os"
+	"os/signal"
 	"syscall"
 
 	"github.com/google/uuid"
@@ -52,5 +54,41 @@ func (a *App) Run() error{
 	)
 
 	g, ctx := errgroup.WithContext(a.ctx)
+	for _, srv := range a.opts.servers {
+		srv := srv
+		g.Go(func() error {
+			<-ctx.Done()
+			return srv.Stop()
+		})
+		g.Go(func() error {
+			return srv.Start()
+		})
+	}
 
+	//linux signal terminal
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, a.opts.sigs...)
+
+	g.Go(func() error {
+		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-c:
+				a.Stop()
+			}
+		}
+	})
+
+	if err := g.Wait(); err != nil && !errors.Is(err, context.Canceled) {
+		return err
+	}
+	return nil
+}
+
+func (a *App) Stop() error {
+	if a.cancel != nil {
+		a.cancel()
+	}
+	return nil
 }
