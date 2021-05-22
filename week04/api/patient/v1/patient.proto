@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package api.patient.v1;
+
+option go_package = "kwdms/api/patient/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.patient.v1";
+
+
+service Patient {
+    rpc GetPatientInfo (GetPatientInfoRequest) returns (GetPatientInfoReply);
+    rpc ListPatientInfo (ListPatientInfoRequest) returns (ListPatientInfoReply);
+}
+
+
+message PatientInfo{
+    string patient_id = 1;
+    string patient_name = 2;
+    string pact_code = 3;
+    string pact_name = 4;
+    string birth_day = 5;
+    int32  age = 6;
+    string gender = 7;
+    string iden_no = 8;
+    int32  idcard_type = 9;
+    string home_address = 10;
+    string phone_number = 11;
+}
+
+message GetPatientInfoRequest {
+    string patient_id = 1;
+}
+message GetPatientInfoReply {
+    PatientInfo patient = 1;
+}
+
+message ListPatientInfoRequest {
+    repeated string patient_ids = 1;
+}
+
+message ListPatientInfoReply {
+    repeated PatientInfo patient = 1;
+}
+
