@@ -6,13 +6,13 @@
 package main
 
 import (
+	"github.com/go-kratos/kratos/v2"
+	"github.com/go-kratos/kratos/v2/log"
 	"kwdms/app/patient/internal/biz"
 	"kwdms/app/patient/internal/conf"
 	"kwdms/app/patient/internal/data"
 	"kwdms/app/patient/internal/server"
 	"kwdms/app/patient/internal/service"
-	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 // Injectors from wire.go:
@@ -23,11 +23,11 @@ func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	if err != nil {
 		return nil, nil, err
 	}
-	greeterRepo := data.NewGreeterRepo(dataData, logger)
-	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
-	greeterService := service.NewGreeterService(greeterUsecase, logger)
-	httpServer := server.NewHTTPServer(confServer, greeterService, logger)
-	grpcServer := server.NewGRPCServer(confServer, greeterService, logger)
+	patientRepo := data.NewPatientRepo(dataData, logger)
+	patientUseCase := biz.NewPatientUseCase(patientRepo, logger)
+	patientService := service.NewPatientService(patientUseCase, logger)
+	httpServer := server.NewHTTPServer(confServer, patientService, logger)
+	grpcServer := server.NewGRPCServer(confServer, patientService, logger)
 	app := newApp(logger, httpServer, grpcServer)
 	return app, func() {
 		cleanup()
